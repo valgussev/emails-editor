@@ -1,9 +1,16 @@
 import './EmailsInput.scss';
 
+const ENTER_KEY_CODE = 13;
+const COMMA_KEY_CODE = 188;
+
 // https://stackoverflow.com/a/46181
 const isEmailValid = (email) => {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   return re.test(String(email).toLowerCase());
+}
+
+const removeEmailElement = (element) => {
+  element && element.parentNode && element.parentNode.removeChild(element);
 }
 
 const createEmailElement = ({
@@ -19,6 +26,11 @@ const createEmailElement = ({
 
   const emailSpanClose = document.createElement('span');
   emailSpanClose.className = 'emails-input__email-close';
+  emailSpanClose.addEventListener('click', (event) => {
+    event.preventDefault();
+    removeEmailElement(emailContainer);
+  });
+
   emailContainer.append(emailSpanClose);
   return emailContainer;
 }
@@ -26,23 +38,35 @@ const createEmailElement = ({
 export const createEmailsInput = ({
   onClick,
 }) => {
-  const emailsInputContainer = document.createElement('div');
-  emailsInputContainer.className = 'emails-input';
-
-  const emailContainer = createEmailElement({ email: 'john@miro.com' });
-  emailsInputContainer.append(emailContainer);
-
-  const emailContainerInvalid = createEmailElement({ email: 'invalid-email' });
-  emailsInputContainer.append(emailContainerInvalid);
+  const container = document.createElement('div');
+  container.className = 'emails-input';
 
   const emailsInputTextarea = document.createElement('textarea');
   emailsInputTextarea.className = 'emails-input__textarea'
   emailsInputTextarea.placeholder = 'add more people…';
 
-  emailsInputContainer.append(emailsInputTextarea);
-  emailsInputContainer.addEventListener('click', () => {
+  emailsInputTextarea.addEventListener('keydown', (event) => {
+    if (event.keyCode === ENTER_KEY_CODE || event.keyCode === COMMA_KEY_CODE) {
+      event.preventDefault();
+      const newEmailElement = createEmailElement({ email: event.target.value });
+      container.insertBefore(newEmailElement, emailsInputTextarea);
+      emailsInputTextarea.value = '';
+    }
+  });
+
+  emailsInputTextarea.addEventListener('blur', (event) => {
+    const { value: email } = event.target;
+    if (email) {
+      const newEmailElement = createEmailElement({ email });
+      container.insertBefore(newEmailElement, emailsInputTextarea);
+      emailsInputTextarea.value = '';
+    }
+  });
+
+  container.append(emailsInputTextarea);
+  container.addEventListener('click', () => {
     emailsInputTextarea.focus();
   });
 
-  return emailsInputContainer;
+  return container;
 };
