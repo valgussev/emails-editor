@@ -1,0 +1,76 @@
+.emails-input {
+  background: #FFFFFF;
+  border: 1px solid #C3C2CF;
+  box-sizing: border-box;
+  border-radius: 4px;
+  font-family: 'Open Sans', sans-serif;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 14px;
+  line-height: 24px;
+  cursor: text;
+
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  overflow-y: auto;
+  max-height: 200px;
+
+  &__email {
+    background: rgba(102, 153, 255, 0.2);
+    border-radius: 100px;
+    display: inline-block;
+    padding: 0 10px;
+    margin: 2px;
+    cursor: pointer;
+
+    &--invalid {
+      border-radius: 0;
+      background-color: transparent;
+      border: none;
+      padding: 0;
+      border-bottom: 1px dashed #D92929;
+    }
+  }
+
+  &__email-close {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    position: relative;
+    padding: 0 4px;
+
+    &:before,
+    &:after {
+      position: absolute;
+      right: 5px;
+      top: calc(50% - 5px);
+      content: ' ';
+      height: 10px;
+      width: 1px;
+      background: #050038;
+    }
+
+    &:before {
+      transform: rotate(45deg);
+    }
+    &:after {
+      transform: rotate(-45deg);
+    }
+  }
+
+  // remove textarea styling
+  &__textarea {
+    border: none;
+    overflow: auto;
+    outline: none;
+    box-shadow: none;
+    resize: none;
+    padding: 0;
+    margin: 0 4px;
+    height: 25px;
+    padding-top: 5px;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+}
