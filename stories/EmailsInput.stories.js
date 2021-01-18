@@ -1,19 +1,21 @@
 import { EmailsInput } from './EmailsInput';
+import { createForm } from './Form';
 
 export default {
   title: 'Example/EmailsInput',
-  argTypes: {
-    onClick: { action: 'onClick' },
-  },
 };
 
-const Template = ({ ...args }) => {
+const EmailsEditorTemplate = ({ ...args }) => {
   const emailsInput = new EmailsInput({ ...args });
-  emailsInput.addEmail();
   return emailsInput.getContainer();
 };
 
-export const EmailsEditor = Template.bind({});
-EmailsEditor.args = {
-  onClick: () => alert('Clicked')
+const FormTemplate = ({ ...args }) => {
+  return createForm({ ...args });
 };
+
+export const EmailsEditor = EmailsEditorTemplate.bind({});
+EmailsEditor.args = {};
+
+export const Form = FormTemplate.bind({});
+Form.args = {};

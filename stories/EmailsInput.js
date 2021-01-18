@@ -23,6 +23,7 @@ export class EmailsInput {
     const email = this._generateEmail();
     const newEmailElement = this._createEmailElement({ email });
     this.container.insertBefore(newEmailElement, this.emailInput);
+    this.emailInput.focus();
   }
 
   _createContainer(emailInput) {
@@ -80,8 +81,10 @@ export class EmailsInput {
     email,
   }) {
     const sanitizedEmail = this._sanitizeEmail(email);
+    const isEmailValid = this._getIsEmailValid(sanitizedEmail);
+
     const emailContainer = document.createElement('div');
-    const validatedEmailClassName = this._isEmailValid(sanitizedEmail) ? '' : 'emails-input__email--invalid';
+    const validatedEmailClassName = isEmailValid ? '' : 'emails-input__email--invalid';
     emailContainer.className = ['emails-input__email', validatedEmailClassName].join(' ');
 
     const emailSpan = document.createElement('span');
@@ -94,10 +97,14 @@ export class EmailsInput {
       event.stopPropagation();
       event.preventDefault();
       this._removeElement(emailContainer);
-      this.emailsCount -= 1;
+      if (isEmailValid) {
+        this.emailsCount -= 1;
+      }
     });
 
-    this.emailsCount += 1;
+    if (isEmailValid) {
+      this.emailsCount += 1;
+    }
     emailContainer.append(emailSpanClose);
     return emailContainer;
   }
@@ -107,7 +114,7 @@ export class EmailsInput {
   }
 
   // https://stackoverflow.com/a/46181
-  _isEmailValid(email) {
+  _getIsEmailValid(email) {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   }
