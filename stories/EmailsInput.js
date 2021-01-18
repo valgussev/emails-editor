@@ -15,7 +15,7 @@ export class EmailsInput {
   * Get container node
   * @return {Node}
   */
-  getContainer = () => {
+  getContainer() {
     return this.container;
   }
 
@@ -23,14 +23,14 @@ export class EmailsInput {
   * Get emails count
   * @return {Number}
   */
-  getEmailsCount = () => {
+  getEmailsCount() {
     return this.emailsCount;
   }
 
   /**
   * Add email to the container
   */
-  addEmail = () => {
+  addEmail() {
     const email = this._generateEmail();
     const newEmailElement = this._createEmailElement({ email });
     this.container.insertBefore(newEmailElement, this.emailInput);
