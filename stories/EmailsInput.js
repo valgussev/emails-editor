@@ -11,14 +11,25 @@ export class EmailsInput {
     this.container = this._createContainer(this.emailInput);
   }
 
+  /**
+  * Get container node
+  * @return {Node}
+  */
   getContainer = () => {
     return this.container;
   }
 
+  /**
+  * Get emails count
+  * @return {Number}
+  */
   getEmailsCount = () => {
     return this.emailsCount;
   }
 
+  /**
+  * Add email to the container
+  */
   addEmail = () => {
     const email = this._generateEmail();
     const newEmailElement = this._createEmailElement({ email });
@@ -26,6 +37,12 @@ export class EmailsInput {
     this.emailInput.focus();
   }
 
+  /**
+  * Generates container node
+  * @private
+  * @param  {Node} emailInput [node to focus on]
+  * @return {Node}
+  */
   _createContainer(emailInput) {
     const container = document.createElement('div');
     container.className = 'emails-input';
@@ -36,6 +53,11 @@ export class EmailsInput {
     return container;
   }
 
+  /**
+  * Generates input node
+  * @private
+  * @return {Node}
+  */
   _createInputElement() {
     const emailInput = document.createElement('textarea');
     emailInput.className = 'emails-input__textarea'
@@ -77,6 +99,12 @@ export class EmailsInput {
     return emailInput;
   }
 
+  /**
+  * Generates email node
+  * @private
+  * @param  {String} email
+  * @return {Node}
+  */
   _createEmailElement({
     email,
   }) {
@@ -109,20 +137,41 @@ export class EmailsInput {
     return emailContainer;
   }
 
+  /**
+  * Removes element from its parent
+  * @private
+  * @param  {Node} element
+  */
   _removeElement(element) {
     return element && element.parentNode && element.parentNode.removeChild(element);
   }
 
-  // https://stackoverflow.com/a/46181
+  /**
+  * Validates email. Taken from https://stackoverflow.com/a/46181
+  * @private
+  * @param  {String} email
+  * @return {Boolean}
+  */
   _getIsEmailValid(email) {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(String(email).toLowerCase());
   }
 
+  /**
+  * Sanitizes email address
+  * @private
+  * @param  {String} email
+  * @return {String}
+  */
   _sanitizeEmail(email) {
     return email.trim();
   }
 
+  /**
+   * Generates random email addresses
+   * @private
+   * @return {String}
+   */
   _generateEmail() {
     return Math.random().toString(36).substring(2, 11) + '@' + Math.random().toString(36).substring(2, 8) + '.com';
   }
