@@ -6,6 +6,9 @@ It also provides `getEmailsCount` and `addEmail` handy methods to control the in
 
 Form is a component which is responsible for adding random emails and printing an amount of valid emails.
 
+## Demo
+Demo can be found [here](https://valgussev.github.io/emails-editor/)
+
 ## Getting started
 1. Install packages by running `yarn`
 1. Render a storybook by running `yarn storybook`
@@ -18,3 +21,6 @@ Storybook comes with the following components:
 1. EmailsEditor - rendering of a `EmailsEditor` component
 1. MultiForm - rendering several `Form` components on a page
 1. MultiEmailsEditor - rendering several `EmailsEditor` components on a page
+
+## Publishing
+In order to publish to Github Pages run `yarn deploy-storybook`
