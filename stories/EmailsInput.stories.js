@@ -1,4 +1,4 @@
-import { createEmailsInput } from './EmailsInput';
+import { EmailsInput } from './EmailsInput';
 
 export default {
   title: 'Example/EmailsInput',
@@ -7,13 +7,13 @@ export default {
   },
 };
 
-const Template = ({ label, ...args }) => {
-  // You can either use a function to create DOM elements or use a plain html string!
-  // return `<div>${label}</div>`;
-  return createEmailsInput({ label, ...args });
+const Template = ({ ...args }) => {
+  const emailsInput = new EmailsInput({ ...args });
+  emailsInput.addEmail();
+  return emailsInput.getContainer();
 };
 
-export const EmailsInput = Template.bind({});
-EmailsInput.args = {
+export const EmailsEditor = Template.bind({});
+EmailsEditor.args = {
   onClick: () => alert('Clicked')
 };

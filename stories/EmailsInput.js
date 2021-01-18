@@ -3,91 +3,120 @@ import './EmailsInput.scss';
 const ENTER_KEY_CODE = 13;
 const COMMA_KEY_CODE = 188;
 
-// https://stackoverflow.com/a/46181
-const isEmailValid = (email) => {
-  const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(String(email).toLowerCase());
-}
+export class EmailsInput {
+  constructor() {
+    this.emailsCount = 0;
 
-const sanitizeEmail = (email) => {
-  return email.trim();
-}
+    this.emailInput = this._createInputElement();
+    this.container = this._createContainer(this.emailInput);
+  }
 
-const removeEmailElement = (element) => {
-  element && element.parentNode && element.parentNode.removeChild(element);
-}
+  getContainer = () => {
+    return this.container;
+  }
 
-const createEmailElement = ({
-  email,
-}) => {
-  // remove whitespaces
-  const sanitizedEmail = sanitizeEmail(email);
-  const emailContainer = document.createElement('div');
-  const validatedEmailClassName = isEmailValid(sanitizedEmail) ? '' : 'emails-input__email--invalid';
-  emailContainer.className = ['emails-input__email', validatedEmailClassName].join(' ');
+  getEmailsCount = () => {
+    return this.emailsCount;
+  }
 
-  const emailSpan = document.createElement('span');
-  emailSpan.innerText = sanitizedEmail;
-  emailContainer.append(emailSpan);
+  addEmail = () => {
+    const email = this._generateEmail();
+    const newEmailElement = this._createEmailElement({ email });
+    this.container.insertBefore(newEmailElement, this.emailInput);
+  }
 
-  const emailSpanClose = document.createElement('span');
-  emailSpanClose.className = 'emails-input__email-close';
-  emailSpanClose.addEventListener('click', (event) => {
-    event.stopPropagation();
-    event.preventDefault();
-    removeEmailElement(emailContainer);
-  });
+  _createContainer(emailInput) {
+    const container = document.createElement('div');
+    container.className = 'emails-input';
+    container.append(emailInput);
+    container.addEventListener('click', () => {
+      emailInput.focus();
+    });
+    return container;
+  }
 
-  emailContainer.append(emailSpanClose);
-  return emailContainer;
-}
+  _createInputElement() {
+    const emailInput = document.createElement('textarea');
+    emailInput.className = 'emails-input__textarea'
+    emailInput.placeholder = 'add more people…';
 
-export const createEmailsInput = () => {
-  const container = document.createElement('div');
-  container.className = 'emails-input';
+    emailInput.addEventListener('keydown', (event) => {
+      if (event.keyCode === ENTER_KEY_CODE || event.keyCode === COMMA_KEY_CODE) {
+        event.stopPropagation();
+        event.preventDefault();
+        const newEmailElement = this._createEmailElement({ email: event.target.value });
+        this.container.insertBefore(newEmailElement, emailInput);
+        emailInput.value = '';
+      }
+    });
 
-  const emailsInputTextarea = document.createElement('textarea');
-  emailsInputTextarea.className = 'emails-input__textarea'
-  emailsInputTextarea.placeholder = 'add more people…';
+    emailInput.addEventListener('blur', (event) => {
+      const { value: email } = event.target;
+      if (email) {
+        const newEmailElement = this._createEmailElement({ email });
+        this.container.insertBefore(newEmailElement, emailInput);
+        emailInput.value = '';
+      }
+    });
 
-  emailsInputTextarea.addEventListener('keydown', (event) => {
-    if (event.keyCode === ENTER_KEY_CODE || event.keyCode === COMMA_KEY_CODE) {
+    emailInput.addEventListener('paste', (event) => {
       event.stopPropagation();
       event.preventDefault();
-      const newEmailElement = createEmailElement({ email: event.target.value });
-      container.insertBefore(newEmailElement, emailsInputTextarea);
-      emailsInputTextarea.value = '';
-    }
-  });
 
-  emailsInputTextarea.addEventListener('blur', (event) => {
-    const { value: email } = event.target;
-    if (email) {
-      const newEmailElement = createEmailElement({ email });
-      container.insertBefore(newEmailElement, emailsInputTextarea);
-      emailsInputTextarea.value = '';
-    }
-  });
+      const clipboardData = event.clipboardData || window.clipboardData;
+      const pastedData = clipboardData.getData('Text');
 
-  emailsInputTextarea.addEventListener('paste', (event) => {
-    event.stopPropagation();
-    event.preventDefault();
+      if (pastedData) {
+        pastedData.split(',').forEach(email => {
+          const newEmailElement = this._createEmailElement({ email });
+          this.container.insertBefore(newEmailElement, emailInput);
+        });
+      }
+    });
+    return emailInput;
+  }
 
-    const clipboardData = event.clipboardData || window.clipboardData;
-    const pastedData = clipboardData.getData('Text');
+  _createEmailElement({
+    email,
+  }) {
+    const sanitizedEmail = this._sanitizeEmail(email);
+    const emailContainer = document.createElement('div');
+    const validatedEmailClassName = this._isEmailValid(sanitizedEmail) ? '' : 'emails-input__email--invalid';
+    emailContainer.className = ['emails-input__email', validatedEmailClassName].join(' ');
 
-    if (pastedData) {
-      pastedData.split(',').forEach(email => {
-        const newEmailElement = createEmailElement({ email });
-        container.insertBefore(newEmailElement, emailsInputTextarea);
-      });
-    }
-  });
+    const emailSpan = document.createElement('span');
+    emailSpan.innerText = sanitizedEmail;
+    emailContainer.append(emailSpan);
 
-  container.append(emailsInputTextarea);
-  container.addEventListener('click', () => {
-    emailsInputTextarea.focus();
-  });
+    const emailSpanClose = document.createElement('span');
+    emailSpanClose.className = 'emails-input__email-close';
+    emailSpanClose.addEventListener('click', (event) => {
+      event.stopPropagation();
+      event.preventDefault();
+      this._removeElement(emailContainer);
+      this.emailsCount -= 1;
+    });
 
-  return container;
-};
+    this.emailsCount += 1;
+    emailContainer.append(emailSpanClose);
+    return emailContainer;
+  }
+
+  _removeElement(element) {
+    return element && element.parentNode && element.parentNode.removeChild(element);
+  }
+
+  // https://stackoverflow.com/a/46181
+  _isEmailValid(email) {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+  }
+
+  _sanitizeEmail(email) {
+    return email.trim();
+  }
+
+  _generateEmail() {
+    return Math.random().toString(36).substring(2, 11) + '@' + Math.random().toString(36).substring(2, 8) + '.com';
+  }
+}
